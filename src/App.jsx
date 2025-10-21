@@ -193,18 +193,18 @@ function shuffleOptions(options) {
   }
   return arr;
 }
-
 export default function QuizGame() {
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeLeft, setTimeLeft] = useState(20);
+  const [showTopText, setShowTopText] = useState(false);
+  const [showBottomText, setShowBottomText] = useState(false);
+  const [showScoreText, setShowScoreText] = useState(false);
 
-  // Embaralha as opções da pergunta atual
   const shuffledOptions = useMemo(() => shuffleOptions(questions[current].options), [current]);
 
-  // 🕒 Temporizador
   useEffect(() => {
     if (timeLeft <= 0) {
       handleAnswer(null);
@@ -219,12 +219,10 @@ export default function QuizGame() {
     setSelected(null);
   }, [current]);
 
-  // 🎯 Função de resposta
   function handleAnswer(index) {
     if (selected !== null) return;
     setSelected(index);
 
-    // Verifica o índice original da resposta
     const chosenOption = index !== null ? shuffledOptions[index].i : null;
     if (chosenOption === questions[current].answer) {
       setScore(score + 1);
@@ -236,74 +234,83 @@ export default function QuizGame() {
         setCurrent(next);
       } else {
         setShowResult(true);
+        // Fade-in sequencial
+        setTimeout(() => setShowTopText(true), 300);
+        setTimeout(() => setShowBottomText(true), 1500);
+        setTimeout(() => setShowScoreText(true), 2500);
       }
     }, 1000);
   }
 
-  // 🔁 Função para reiniciar tudo
   function resetQuiz() {
     setCurrent(0);
     setScore(0);
     setShowResult(false);
     setSelected(null);
     setTimeLeft(20);
+    setShowTopText(false);
+    setShowBottomText(false);
+    setShowScoreText(false);
   }
 
-  // 🧮 Cálculo da barra de progresso
   const progress = ((current + 1) / questions.length) * 100;
-
-  // 🏁 Tela de resultados
-  if (showResult) {
-    return (
-      <div className="quiz-container result">
-        <h1>Fim do Quiz!</h1>
-        <p>Você acertou {score} de {questions.length} perguntas.</p>
-        <button className="default" onClick={resetQuiz}>
-          Tentar novamente
-        </button>
-      </div>
-    );
-  }
-
   const q = questions[current];
 
-  // 🧩 Tela principal
   return (
     <div className="quiz-container">
-      <div className="top-bar">
-        <div className="progress-bar-container">
-          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
-        </div>
-        <button className="restart-btn" onClick={resetQuiz}>
-          🔁 Reiniciar
-        </button>
-      </div>
-
-      <h2>Pergunta {current + 1} / {questions.length}</h2>
-      <div className="timer">Tempo: {timeLeft}s</div>
-
-      <p>{q.question}</p>
-
-      <div className="options-grid">
-        {shuffledOptions.map((item, i) => {
-          let className = "default";
-          if (selected !== null) {
-            if (item.i === q.answer) className = "correct";
-            else if (i === selected) className = "wrong";
-            else className = "disabled";
-          }
-          return (
-            <button
-              key={i}
-              className={className}
-              onClick={() => handleAnswer(i)}
-              disabled={selected !== null}
-            >
-              {item.opt}
+      {!showResult && (
+        <>
+          <div className="top-bar">
+            <div className="progress-bar-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+            </div>
+            <button className="restart-btn" onClick={resetQuiz}>
+              🔁 Reiniciar
             </button>
-          );
-        })}
-      </div>
+          </div>
+
+          <h2>Pergunta {current + 1} / {questions.length}</h2>
+          <div className="timer">Tempo: {timeLeft}s</div>
+
+          <p>{q.question}</p>
+
+          <div className="options-grid">
+            {shuffledOptions.map((item, i) => {
+              let className = "default";
+              if (selected !== null) {
+                if (item.i === q.answer) className = "correct";
+                else if (i === selected) className = "wrong";
+                else className = "disabled";
+              }
+              return (
+                <button
+                  key={i}
+                  className={className}
+                  onClick={() => handleAnswer(i)}
+                  disabled={selected !== null}
+                >
+                  {item.opt}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {showResult && (
+        <div className="result-screen">
+          {showTopText && (
+            <h1 className="result-top fade-text">O MAB lembra que água é vida direito de todos</h1>
+          )}
+          {showBottomText && (
+            <p className="result-bottom fade-text">Quando cuidamos das pessoas do meio ambiente, cuidamos do nosso planeta!</p>
+          )}
+          {showScoreText && (
+            <p className="result-score fade-text">Você acertou {score} de {questions.length} perguntas!</p>
+          )}
+          <button className="default restart-final" onClick={resetQuiz}>Tentar novamente</button>
+        </div>
+      )}
     </div>
   );
 }
