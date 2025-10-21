@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import "./App.css";
 
 const questions = [
@@ -12,7 +12,7 @@ const questions = [
     ],
     answer: 1
   },
-    {
+  {
     question: "O que quer dizer “atingido por barragem”?",
     options: [
       "Pessoa que gosta de nadar em represas",
@@ -162,7 +162,7 @@ const questions = [
     ],
     answer: 1
   },
-    {
+  {
     question: "Quanto de matéria orgânica foi liberado no rompimento?",
     options: [
       "Cerca de 13 mil litros",
@@ -184,12 +184,25 @@ const questions = [
   }
 ];
 
+// 🔁 Função para embaralhar opções
+function shuffleOptions(options) {
+  const arr = options.map((opt, i) => ({ opt, i }));
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export default function QuizGame() {
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [selected, setSelected] = useState(null);
   const [timeLeft, setTimeLeft] = useState(20);
+
+  // Embaralha as opções da pergunta atual
+  const shuffledOptions = useMemo(() => shuffleOptions(questions[current].options), [current]);
 
   // 🕒 Temporizador
   useEffect(() => {
@@ -210,9 +223,13 @@ export default function QuizGame() {
   function handleAnswer(index) {
     if (selected !== null) return;
     setSelected(index);
-    if (index === questions[current].answer) {
+
+    // Verifica o índice original da resposta
+    const chosenOption = index !== null ? shuffledOptions[index].i : null;
+    if (chosenOption === questions[current].answer) {
       setScore(score + 1);
     }
+
     setTimeout(() => {
       const next = current + 1;
       if (next < questions.length) {
@@ -268,10 +285,10 @@ export default function QuizGame() {
       <p>{q.question}</p>
 
       <div className="options-grid">
-        {q.options.map((opt, i) => {
+        {shuffledOptions.map((item, i) => {
           let className = "default";
           if (selected !== null) {
-            if (i === q.answer) className = "correct";
+            if (item.i === q.answer) className = "correct";
             else if (i === selected) className = "wrong";
             else className = "disabled";
           }
@@ -282,7 +299,7 @@ export default function QuizGame() {
               onClick={() => handleAnswer(i)}
               disabled={selected !== null}
             >
-              {opt}
+              {item.opt}
             </button>
           );
         })}
