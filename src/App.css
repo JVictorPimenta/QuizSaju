@@ -100,18 +100,42 @@ button.disabled {
   padding: 30px;
 }
 
-/* Barra de Progresso */
+/* 🔵 Barra de progresso */
 .progress-bar-container {
-  width: 100%;
+  flex: 1;
   height: 10px;
-  background-color: #1f2937; /* cinza escuro */
+  background-color: #1f2937;
   border-radius: 10px;
-  margin-bottom: 15px;
   overflow: hidden;
+  margin-right: 10px;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(to right, #06b6d4, #3b82f6); /* azul bonito */
+  background: linear-gradient(to right, #06b6d4, #3b82f6);
   transition: width 0.3s ease-in-out;
+}
+
+/* 🔁 Botão de reinício */
+.restart-btn {
+  max-width: 100px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.restart-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* 🌟 Linha superior com barra + botão */
+.top-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
 }

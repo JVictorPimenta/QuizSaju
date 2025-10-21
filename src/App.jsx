@@ -12,13 +12,13 @@ const questions = [
     ],
     answer: 1
   },
-  {
-    question: "Qual aspecto cultural é ressaltado pelos estudos sobre a Lagoa da Conceição?",
+    {
+    question: "O que quer dizer “atingido por barragem”?",
     options: [
-      "A lagoa é apenas um ponto turístico",
-      "Ela tem valor histórico, simbólico e cultural para a comunidade local",
-      "É uma área de interesse exclusivamente econômico",
-      "É território de uso restrito à CASAN"
+      "Pessoa que gosta de nadar em represas",
+      "Pessoa que perdeu casa, terra ou renda por causa de uma barragem",
+      "Pessoa que trabalha construindo barragens",
+      "Pessoa que vive na cidade grande"
     ],
     answer: 1
   },
@@ -33,17 +33,7 @@ const questions = [
     answer: 2
   },
   {
-    question: "O que significa 'privatização da água e saneamento'?",
-    options: [
-      "Tornar os serviços públicos gratuitos para todos",
-      "Vender os serviços de água e esgoto para empresas privadas",
-      "Melhorar a qualidade da água sem custos adicionais",
-      "Criar novas fontes de água potável"
-    ],
-    answer: 1
-  },
-  {
-    question: "Qual é um dos principais riscos da privatização desses serviços?",
+    question: "Qual é um dos principais riscos da privatização dos serviços de abastecimento de água e saneamento?",
     options: [
       "Aumento da qualidade da água",
       "Redução das tarifas para a população",
@@ -53,7 +43,7 @@ const questions = [
     answer: 2
   },
   {
-    question: "O que o relatório técnico do SENGE-SC destacou sobre o rompimento?",
+    question: "O que o relatório técnico do SENGE-SC destacou sobre o rompimento da lagoa?",
     options: [
       "Foi um evento natural inevitável",
       "Resultou de falhas estruturais e ausência de manutenção preventiva",
@@ -133,16 +123,6 @@ const questions = [
     answer: 1
   },
   {
-    question: "O que disseram os engenheiros do SENGE-SC sobre o acidente?",
-    options: [
-      "Foi algo natural",
-      "Foi falta de manutenção preventiva e cuidado na estrutura",
-      "Foi uma explosão de gás",
-      "Não teve impacto"
-    ],
-    answer: 1
-  },
-  {
     question: "Após o rompimento, o que foi feito para conter os efluentes liberados?",
     options: [
       "Nada foi feito; os efluentes se dispersaram livremente",
@@ -182,6 +162,16 @@ const questions = [
     ],
     answer: 1
   },
+    {
+    question: "Quanto de matéria orgânica foi liberado no rompimento?",
+    options: [
+      "Cerca de 13 mil litros",
+      "Mais de 130 milhões de litros",
+      "Menos de 1 milhão de litros",
+      "Aproximadamente 500 mil litros"
+    ],
+    answer: 1
+  },
   {
     question: "Quantas famílias perderam casas e bens com o rompimento em Monte Cristo (2023)?",
     options: [
@@ -201,6 +191,7 @@ export default function QuizGame() {
   const [selected, setSelected] = useState(null);
   const [timeLeft, setTimeLeft] = useState(20);
 
+  // 🕒 Temporizador
   useEffect(() => {
     if (timeLeft <= 0) {
       handleAnswer(null);
@@ -215,6 +206,7 @@ export default function QuizGame() {
     setSelected(null);
   }, [current]);
 
+  // 🎯 Função de resposta
   function handleAnswer(index) {
     if (selected !== null) return;
     setSelected(index);
@@ -231,34 +223,48 @@ export default function QuizGame() {
     }, 1000);
   }
 
+  // 🔁 Função para reiniciar tudo
+  function resetQuiz() {
+    setCurrent(0);
+    setScore(0);
+    setShowResult(false);
+    setSelected(null);
+    setTimeLeft(20);
+  }
+
+  // 🧮 Cálculo da barra de progresso
+  const progress = ((current + 1) / questions.length) * 100;
+
+  // 🏁 Tela de resultados
   if (showResult) {
     return (
       <div className="quiz-container result">
         <h1>Fim do Quiz!</h1>
         <p>Você acertou {score} de {questions.length} perguntas.</p>
-        <button className="default" onClick={() => {
-          setCurrent(0);
-          setScore(0);
-          setShowResult(false);
-          setTimeLeft(20);
-        }}>Tentar novamente</button>
+        <button className="default" onClick={resetQuiz}>
+          Tentar novamente
+        </button>
       </div>
     );
   }
 
   const q = questions[current];
-  const progress = ((current + 1) / questions.length) * 100;
 
+  // 🧩 Tela principal
   return (
     <div className="quiz-container">
-      <h2>Pergunta {current + 1}</h2>
-
-      {/* 🔵 Barra de Progresso */}
-      <div className="progress-bar-container">
-        <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+      <div className="top-bar">
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+        </div>
+        <button className="restart-btn" onClick={resetQuiz}>
+          🔁 Reiniciar
+        </button>
       </div>
 
+      <h2>Pergunta {current + 1} / {questions.length}</h2>
       <div className="timer">Tempo: {timeLeft}s</div>
+
       <p>{q.question}</p>
 
       <div className="options-grid">
