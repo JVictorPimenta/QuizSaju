@@ -200,3 +200,66 @@ button.disabled {
   transform: scale(1.1);
   background-color: #2563eb;
 }
+
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  gap: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  text-align: center;
+  color: #fff;
+  animation: fadeInScreen 1s ease-in-out;
+}
+
+.welcome-screen h1 {
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 12px rgba(0,0,0,0.7);
+  animation: fadeInText 1s ease forwards;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  max-width: 400px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 8px rgba(0,0,0,0.5);
+  animation: fadeInText 1.2s ease forwards;
+}
+
+.start-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInText 1.4s ease forwards;
+}
+
+.start-btn:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+}
+
+/* Animações já existentes */
+@keyframes fadeInScreen {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInText {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -184,7 +184,6 @@ const questions = [
   }
 ];
 
-// 🔁 Função para embaralhar opções
 function shuffleOptions(options) {
   const arr = options.map((opt, i) => ({ opt, i }));
   for (let i = arr.length - 1; i > 0; i--) {
@@ -193,7 +192,9 @@ function shuffleOptions(options) {
   }
   return arr;
 }
+
 export default function QuizGame() {
+  const [started, setStarted] = useState(false); // novo estado
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
@@ -203,21 +204,26 @@ export default function QuizGame() {
   const [showBottomText, setShowBottomText] = useState(false);
   const [showScoreText, setShowScoreText] = useState(false);
 
-  const shuffledOptions = useMemo(() => shuffleOptions(questions[current].options), [current]);
+  const shuffledOptions = useMemo(
+    () => shuffleOptions(questions[current].options),
+    [current]
+  );
 
   useEffect(() => {
+    if (!started) return; // não contar tempo antes de começar
     if (timeLeft <= 0) {
       handleAnswer(null);
       return;
     }
     const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     return () => clearTimeout(timer);
-  }, [timeLeft]);
+  }, [timeLeft, started]);
 
   useEffect(() => {
+    if (!started) return;
     setTimeLeft(20);
     setSelected(null);
-  }, [current]);
+  }, [current, started]);
 
   function handleAnswer(index) {
     if (selected !== null) return;
@@ -234,7 +240,6 @@ export default function QuizGame() {
         setCurrent(next);
       } else {
         setShowResult(true);
-        // Fade-in sequencial
         setTimeout(() => setShowTopText(true), 300);
         setTimeout(() => setShowBottomText(true), 1500);
         setTimeout(() => setShowScoreText(true), 2500);
@@ -255,6 +260,20 @@ export default function QuizGame() {
 
   const progress = ((current + 1) / questions.length) * 100;
   const q = questions[current];
+
+  if (!started) {
+    return (
+      <div className="quiz-container welcome-screen">
+        <h1>🌻 Boas-vindas ao Quiz do Saju! 🌻</h1>
+        <p className="welcome-subtitle">
+          Teste seus conhecimentos sobre o MAB e meio ambiente
+        </p>
+        <button className="start-btn" onClick={() => setStarted(true)}>
+          Começar
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="quiz-container">
@@ -300,15 +319,23 @@ export default function QuizGame() {
       {showResult && (
         <div className="result-screen">
           {showTopText && (
-            <h1 className="result-top fade-text">O MAB lembra que água é vida direito de todos</h1>
+            <h1 className="result-top fade-text">
+              O MAB lembra que água é vida e direito de todos
+            </h1>
           )}
           {showBottomText && (
-            <p className="result-bottom fade-text">Quando cuidamos das pessoas do meio ambiente, cuidamos do nosso planeta!</p>
+            <p className="result-bottom fade-text">
+              Quando cuidamos das pessoas e do meio ambiente, cuidamos do nosso planeta!
+            </p>
           )}
           {showScoreText && (
-            <p className="result-score fade-text">Você acertou {score} de {questions.length} perguntas!</p>
+            <p className="result-score fade-text">
+              Você acertou {score} de {questions.length} perguntas!
+            </p>
           )}
-          <button className="default restart-final" onClick={resetQuiz}>Tentar novamente</button>
+          <button className="default restart-final" onClick={resetQuiz}>
+            Tentar novamente
+          </button>
         </div>
       )}
     </div>
