@@ -194,12 +194,11 @@ function shuffleOptions(options) {
 }
 
 export default function QuizGame() {
-  const [started, setStarted] = useState(false); // novo estado
+  const [started, setStarted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(20);
   const [showTopText, setShowTopText] = useState(false);
   const [showBottomText, setShowBottomText] = useState(false);
   const [showScoreText, setShowScoreText] = useState(false);
@@ -208,22 +207,6 @@ export default function QuizGame() {
     () => shuffleOptions(questions[current].options),
     [current]
   );
-
-  useEffect(() => {
-    if (!started) return; // não contar tempo antes de começar
-    if (timeLeft <= 0) {
-      handleAnswer(null);
-      return;
-    }
-    const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [timeLeft, started]);
-
-  useEffect(() => {
-    if (!started) return;
-    setTimeLeft(20);
-    setSelected(null);
-  }, [current, started]);
 
   function handleAnswer(index) {
     if (selected !== null) return;
@@ -238,6 +221,7 @@ export default function QuizGame() {
       const next = current + 1;
       if (next < questions.length) {
         setCurrent(next);
+        setSelected(null);
       } else {
         setShowResult(true);
         setTimeout(() => setShowTopText(true), 300);
@@ -252,7 +236,6 @@ export default function QuizGame() {
     setScore(0);
     setShowResult(false);
     setSelected(null);
-    setTimeLeft(20);
     setShowTopText(false);
     setShowBottomText(false);
     setShowScoreText(false);
@@ -281,15 +264,19 @@ export default function QuizGame() {
         <>
           <div className="top-bar">
             <div className="progress-bar-container">
-              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+              <div
+                className="progress-bar"
+                style={{ width: `${progress}%` }}
+              ></div>
             </div>
             <button className="restart-btn" onClick={resetQuiz}>
               🔁 Reiniciar
             </button>
           </div>
 
-          <h2>Pergunta {current + 1} / {questions.length}</h2>
-          <div className="timer">Tempo: {timeLeft}s</div>
+          <h2>
+            Pergunta {current + 1} / {questions.length}
+          </h2>
 
           <p>{q.question}</p>
 
